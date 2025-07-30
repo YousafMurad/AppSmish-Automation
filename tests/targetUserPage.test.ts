@@ -1,0 +1,146 @@
+import {test, expect} from '@playwright/test';
+import { assertDashboard, assertUserPage, login, logout } from '../global.calls';
+
+test('Go to User Page, create a new User', async ({page})=> {
+    
+    await login(page);
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(400);
+    await assertDashboard(page);
+    await page.waitForTimeout(400);
+    await page.getByRole('link', { name: 'Target Users Target Users' }).click();
+    await page.waitForLoadState('networkidle');
+    await assertUserPage(page);
+   await page.waitForTimeout(500);
+   await page.getByText('New User').click();
+   await page.waitForTimeout(500);
+   await expect(page.getByRole('heading', { name: 'Add Individual User' })).toBeVisible();
+   await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
+   await expect(page.getByRole('button', { name: 'Cancel' })).toBeVisible();
+   await page.waitForTimeout(500);
+   await page.locator('.add-user-main > input').first().fill('Test User');
+   await page.locator('input:nth-child(4)').fill('test12@test.com');
+   await page.locator('input:nth-child(6)').fill('5615557689');
+   await page.locator('input:nth-child(8)').fill('Test');
+   await page.locator('input:nth-child(10)').fill('Tester');
+   await page.locator('input:nth-child(12)').fill('IT');
+   await page.locator('textarea').fill('test123123');
+   await page.getByRole('button', { name: 'Save' }).click();
+   await expect(page.getByText('User Created Succcesfully')).toBeVisible();
+   await page.getByPlaceholder('Search user....').fill('Test User');
+   await page.getByRole('button', { name: 'search' }).click();
+   await expect(page.getByRole('cell', { name: 'Test User' })).toBeVisible();
+   await page.waitForTimeout(1000);
+   await page.getByRole('img', { name: 'Delete' }).click();
+   await expect(page.getByRole('heading', { name: 'Delete User?' })).toBeVisible();
+   await page.getByRole('button', { name: 'Yes' }).click();
+   //       BUG ==> NO DELETE ALERT ADDED 
+   await page.waitForTimeout(1000);
+   await page.getByRole('button', { name: 'Close' }).click();
+   await page.waitForTimeout(1000);
+   await page.getByRole('button', { name: 'search' }).click();
+   await page.waitForTimeout(1500);
+   await expect(page.getByRole('cell', { name: 'No data No data' })).toBeVisible();
+   await logout(page);
+});
+
+test('Go to User Page, create a new User with an invalid phone number', async ({page})=> {
+    
+    await login(page);
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(400);
+    await assertDashboard(page);
+    await page.waitForTimeout(400);
+    await page.getByRole('link', { name: 'Target Users Target Users' }).click();
+    await page.waitForLoadState('networkidle');
+    await assertUserPage(page);
+   await page.waitForTimeout(500);
+   await page.getByText('New User').click();
+   await page.waitForTimeout(500);
+   await expect(page.getByRole('heading', { name: 'Add Individual User' })).toBeVisible();
+   await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
+   await expect(page.getByRole('button', { name: 'Cancel' })).toBeVisible();
+   await page.waitForTimeout(500);
+   await page.locator('.add-user-main > input').first().fill('Test 12');
+   await page.locator('input:nth-child(4)').fill('test12@test.com');
+   await page.locator('input:nth-child(6)').fill('+175486251');
+   await page.locator('input:nth-child(8)').fill('Test');
+   await page.locator('input:nth-child(10)').fill('Tester');
+   await page.locator('input:nth-child(12)').fill('IT');
+   await page.locator('textarea').fill('test123123');
+   await page.getByRole('button', { name: 'Save' }).click();
+   await expect(page.getByText('Invalid phone number.') || page.getByText('error in adding compagain')).toBeVisible();
+});
+
+test('Go to User Page, create a new User with invalid email', async ({page})=> {
+    
+    await login(page);
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(400);
+    await assertDashboard(page);
+    await page.waitForTimeout(400);
+    await page.getByRole('link', { name: 'Target Users Target Users' }).click();
+    await page.waitForLoadState('networkidle');
+    await assertUserPage(page);
+   await page.waitForTimeout(500);
+   await page.getByText('New User').click();
+   await page.waitForTimeout(500);
+   await expect(page.getByRole('heading', { name: 'Add Individual User' })).toBeVisible();
+   await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
+   await expect(page.getByRole('button', { name: 'Cancel' })).toBeVisible();
+   await page.waitForTimeout(500);
+   await page.locator('.add-user-main > input').first().fill('Test User');
+   await page.locator('input:nth-child(4)').fill('12test.com');
+   await page.locator('input:nth-child(6)').fill('5615557689');
+   await page.locator('input:nth-child(8)').fill('Test');
+   await page.locator('input:nth-child(10)').fill('Tester');
+   await page.locator('input:nth-child(12)').fill('IT');
+   await page.locator('textarea').fill('test123123');
+   await page.getByRole('button', { name: 'Save' }).click();
+   await expect(page.getByText('Please provide email in email')).toBeVisible();
+   await page.getByRole('button', { name: 'Cancel' }).click();
+   await logout(page);
+});
+
+test('Go to User Page, User Already Exists', async ({page})=> {
+//Successfully Creating The User with The Same Existing Details    
+    await login(page);
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(400);
+    await assertDashboard(page);
+    await page.waitForTimeout(400);
+    await page.getByRole('link', { name: 'Target Users Target Users' }).click();
+    await page.waitForLoadState('networkidle');
+    await assertUserPage(page);
+   await page.waitForTimeout(500);
+   await page.getByText('New User').click();
+   await page.waitForTimeout(500);
+   await expect(page.getByRole('heading', { name: 'Add Individual User' })).toBeVisible();
+   await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
+   await expect(page.getByRole('button', { name: 'Cancel' })).toBeVisible();
+   await page.waitForTimeout(500);
+   await page.locator('.add-user-main > input').first().fill('User Exists Test');
+   await page.locator('input:nth-child(4)').fill('test12@test.com');
+   await page.locator('input:nth-child(6)').fill('5615557689');
+   await page.locator('input:nth-child(8)').fill('Test');
+   await page.locator('input:nth-child(10)').fill('Tester');
+   await page.locator('input:nth-child(12)').fill('IT');
+   await page.locator('textarea').fill('test123123');
+   await page.getByRole('button', { name: 'Save' }).click();
+   await expect(page.getByText('User Created Succcesfully')).toBeVisible();
+   await page.getByPlaceholder('Search user....').fill('User Exists Test');
+   await page.getByRole('button', { name: 'search' }).click();
+   await expect(page.getByRole('cell', { name: 'User Exists Test' })).toBeVisible();
+   await page.waitForTimeout(1000);
+   await page.getByText('New User').click();
+   await page.waitForTimeout(1000);
+   await page.locator('.add-user-main > input').first().fill('User Exists Test');
+   await page.locator('input:nth-child(4)').fill('test12@test.com');
+   await page.locator('input:nth-child(6)').fill('5615557689');
+   await page.locator('input:nth-child(8)').fill('Test');
+   await page.locator('input:nth-child(10)').fill('Tester');
+   await page.locator('input:nth-child(12)').fill('IT');
+   await page.locator('textarea').fill('test123123');
+   await page.getByRole('button', { name: 'Save' }).click();
+   await expect(page.getByText('User Already Exists')).toBeVisible();
+});
